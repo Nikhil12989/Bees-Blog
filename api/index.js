@@ -34,3 +34,14 @@ app.use('/api/user' , UserRoutes)
 //Sign up api routes 
 
 app.use('/api/auth' , Authroutes )
+
+
+app.use((err , req , res , next) => {
+  const statusCode =  err.statusCode || 500
+  const message = err.message || 'Internal Server Error'
+  res.status(statusCode).json({
+    success:false,
+    statusCode, 
+    message,
+  })
+})
