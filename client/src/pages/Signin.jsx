@@ -1,15 +1,19 @@
 import { Button, Label, TextInput, Alert, Spinner } from "flowbite-react";
 import React, { useState } from "react";
-import { Link , useNavigate } from "react-router-dom";
-import { signInSuccess , signInStart , signInFailure } from "../redux/user/userSlice.js";
-import {  useDispatch , useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  signInSuccess,
+  signInStart,
+  signInFailure,
+} from "../redux/user/userSlice.js";
+import { useDispatch, useSelector } from "react-redux";
 import Oauth from "../components/Oauth.jsx";
 
 export default function Signin() {
   const [formData, setformData] = useState({});
-  const {loading, error: errorMessage} = useSelector(state => state.user)
+  const { loading, error: errorMessage } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const dispatch = useDispatch( )
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setformData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -18,16 +22,15 @@ export default function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if ( !formData.email || !formData.password) {
-      return dispatch(signInFailure('Please fill all required fields'))
+    if (!formData.email || !formData.password) {
+      return dispatch(signInFailure("Please fill all required fields"));
     }
-  
 
     try {
       dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
-        headers: { 'Content-type': 'application/json' },
+        headers: { "Content-type": "application/json" },
         body: JSON.stringify(formData),
       });
 
@@ -38,15 +41,15 @@ export default function Signin() {
       // You can handle the successful signup response here if needed
       const data = await res.json();
       if (data.success === false) {
-       dispatch(signInFailure(data.message));
+        dispatch(signInFailure(data.message));
       }
-      
+
       if (res.ok) {
         dispatch(signInSuccess(data));
-        navigate('/')
+        navigate("/");
       }
     } catch (error) {
-       dispatch(signInFailure(error.message))
+      dispatch(signInFailure(error.message));
     }
   };
 
@@ -61,13 +64,12 @@ export default function Signin() {
             </span>
             Blog
           </Link>
-          <p className="text-sm mt-5">Sign in to  Bees Blog</p>
+          <p className="text-sm mt-5">Sign in to Bees Blog</p>
         </div>
         {/* Right Side  */}
 
         <div className="flex-1">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            
             <div>
               <Label value="Enter Email" />
               <TextInput
@@ -86,17 +88,21 @@ export default function Signin() {
                 onChange={handleChange}
               />
             </div>
-            <Button gradientDuoTone="purpleToPink" type="submit" disabled={loading}>
-              {
-                loading ? ( 
-                 <> 
-                  <Spinner size='sm'/> 
+            <Button
+              gradientDuoTone="purpleToPink"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner size="sm" />
                   <span className="pl-3">Loading</span>
-                 </>
-                ) : 'Sign in'
-              }
+                </>
+              ) : (
+                "Sign in"
+              )}
             </Button>
-            <Oauth/>
+            <Oauth />
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span> Dont have an account?</span>

@@ -3,7 +3,6 @@ import User from "./../models/userModel.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-
 // Sign-up Controller
 export const Signup = async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -64,43 +63,49 @@ export const Signin = async (req, res, next) => {
 };
 
 //Google auth controller
-
 export const google = async (req, res, next) => {
   const { email, name, googlePhotoUrl } = req.body;
   try {
     const user = await User.findOne({ email });
     if (user) {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { id: user._id, isAdmin: user.isAdmin },
+        process.env.JWT_SECRET
+      );
       const { password, ...rest } = user._doc;
       res
         .status(200)
-        .cookie("access_token", token, {
+        .cookie('access_token', token, {
           httpOnly: true,
         })
         .json(rest);
     } else {
-      const generatePassword =
+      const generatedPassword =
         Math.random().toString(36).slice(-8) +
         Math.random().toString(36).slice(-8);
-      const hashedPassword = bcryptjs.hashSync(generatePassword, 10);
+      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
       const newUser = new User({
         username:
-          name.toLowerCase().split(" ").join("") +
+          name.toLowerCase().split(' ').join('') +
           Math.random().toString(9).slice(-4),
         email,
         password: hashedPassword,
         profilePicture: googlePhotoUrl,
       });
       await newUser.save();
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { id: newUser._id, isAdmin: newUser.isAdmin },
+        process.env.JWT_SECRET
+      );
       const { password, ...rest } = newUser._doc;
-      res.status(200).cookie("access_token", token, {
-        httpOnly: true,
-      }).json(rest);
+      res
+        .status(200)
+        .cookie('access_token', token, {
+          httpOnly: true,
+        })
+        .json(rest);
     }
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
-
-export default { Signup, Signin };
