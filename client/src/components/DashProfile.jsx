@@ -17,8 +17,11 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
+  signOutSuccess
 } from "../redux/user/userSlice.js";
-import {HiOutlineExclamationCircle} from 'react-icons/hi'
+import {HiOutlineExclamationCircle} from 'react-icons/hi';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function DashProfile() {
   const { currentUsers , error   } = useSelector((state) => state.user);
@@ -103,11 +106,14 @@ export default function DashProfile() {
       const data = await res.json();
       if (!res.ok) {
         dispatch(updateFailure(data.message));
+        toast.error("Error updating user");
       } else {
         dispatch(updateSuccess(data));
+        toast.success("User updated successfully");
       }
     } catch (error) {
       dispatch(updateFailure(error.message));
+      toast.error("Error updating user");
     }
   };
 
@@ -130,6 +136,28 @@ export default function DashProfile() {
        } catch (error) {
         dispatch(deleteUserFailure(error.message));
        }
+    }
+
+    //handleSignout 
+
+     const handleSignout = async () => {
+          try {
+            
+            const res = await fetch("/api/user/signout", {
+              method: "POST",
+            });
+            const data = await res.json();
+            if (!res.ok) {
+            console.log(data.message);
+            } else {
+              dispatch(signOutSuccess());
+              toast.success("Signed out successfully");
+            }
+          } catch (error) {
+            
+            console.log(error.message);
+          }
+  
     }
    
 
@@ -207,7 +235,7 @@ export default function DashProfile() {
         <span onClick={() => setShowModal(true)} className="cursor-pointer">
           Delete Account
         </span>
-        <span className="cursor-pointer text-blue-600">Sign Out</span>
+        <span onClick={handleSignout} className="cursor-pointer text-blue-600" >Sign Out</span>
       </div>
       <Modal
         show={showModal}
@@ -238,6 +266,7 @@ export default function DashProfile() {
           </div>
         </Modal.Body>
       </Modal>
+      <ToastContainer />
     </div>
   );
 }

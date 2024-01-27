@@ -87,7 +87,7 @@ export const signout = (req, res, next) => {
 };
 
 
- // Get Users Controller
+ // Get all Users Controller
 
 export const getUsers = async (req, res, next) => {
   if (!req.user.isAdmin) {
@@ -130,6 +130,9 @@ export const getUsers = async (req, res, next) => {
     next(error);
   }
 };
+
+
+//Get Single User
 
 export const getUser = async (req, res, next) => {
   try {
