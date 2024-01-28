@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from 'dotenv';
 import UserRoutes from './routes/user.route.js';
 import Authroutes from './routes/auth.route.js';
+import PostRoutes from './routes/post.route.js';
 import cookieParser from "cookie-parser";
 
 dotenv.config()
@@ -36,6 +37,7 @@ app.use('/api/user' , UserRoutes)
 //Sign up api routes 
 
 app.use('/api/auth' , Authroutes )
+app.use('/api/post' , PostRoutes)
 
 
 app.use((err , req , res , next) => {
