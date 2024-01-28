@@ -22,6 +22,7 @@ import {
 import {HiOutlineExclamationCircle} from 'react-icons/hi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Link } from 'react-router-dom';
 
 export default function DashProfile() {
   const { currentUsers , error   } = useSelector((state) => state.user);
@@ -230,6 +231,19 @@ export default function DashProfile() {
         <Button type="submit" gradientDuoTone="purpleToBlue" outline>
           Update
         </Button>
+        {
+          currentUsers.isAdmin && (
+          <Link to={'/create-post'}>
+            <Button
+              type="button"
+              gradientDuoTone="purpleToPink"
+              outline
+            >
+              Create Post
+            </Button>
+          </Link>
+          )
+        }
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         <span onClick={() => setShowModal(true)} className="cursor-pointer">
