@@ -6,17 +6,15 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useNavigate } from 'react-router-dom';
 
 export default function CreatePost() {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
-  const [formData, setFormData] = useState({
-    title: "", // Add title to formData
-    category: "", // Add category to formData
-    image: "", // Add image to formData
-    content: "", // Add content to formData
-  });
+  const [formData, setFormData] = useState({ });
+  const [publishError, setPublishError] = useState(null);
+  const navigate = useNavigate();
 
   const handleUploadImage = async () => {
     try {
@@ -55,12 +53,34 @@ export default function CreatePost() {
     }
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Add your logic to handle form submission with formData
-    console.log("Form submitted with data:", formData);
+    try {
+      const res = await fetch('/api/post/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok) {
+        setPublishError(data.message);
+        return;
+      }
+  
+      // If the response is okay, you can handle success here
+      setPublishError(null);
+      navigate(`/post/${data.slug}`)
+      console.log("Post created successfully!");
+    } catch (error) {
+      console.error("Error during form submission:", error);
+      // Handle error state or log the error as needed
+    }
   };
-
+  
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-center text-3xl my-7 font-semibold"> Create Post </h1>
@@ -72,12 +92,12 @@ export default function CreatePost() {
             required
             id="title"
             className="flex-1"
-            value={formData.title}
+            value={formData.title || ""}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           />
           <Select
             className="flex gap-3"
-            value={formData.category}
+            value={formData.category || ""}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
           >
             <option value="uncategorized">Select Category</option>
@@ -123,14 +143,15 @@ export default function CreatePost() {
         <ReactQuill
           theme="snow"
           placeholder="Write something"
-          className="h-42 mb-12"
+          className="h-72 mb-12"
           required
-          value={formData.content}
+          value={formData.content || ""}
           onChange={(value) => setFormData({ ...formData, content: value })}
         />
         <Button type="submit" gradientDuoTone="pinkToOrange">
           Submit Post
         </Button>
+        {publishError && <Alert className="mt-5 " color='faliure'>{publishError}</Alert>}
       </form>
     </div>
   );
