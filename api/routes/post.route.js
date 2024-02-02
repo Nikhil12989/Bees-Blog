@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifyToken } from './../utils/verifyUser.js';
-import { create , getposts } from '../controllers/post.controller.js';
+import { create , deletepost, getposts } from '../controllers/post.controller.js';
 
 const router = express.Router();
 
@@ -10,5 +10,9 @@ router.post('/create', verifyToken, create);
 // Api route for get requests 
 
 router.get('/getposts',  getposts);
+
+//Api route for delete posts 
+
+router.delete('/deletepost/:postId/:userID' , verifyToken, deletepost)
 
 export default router;

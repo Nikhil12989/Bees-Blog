@@ -37,6 +37,8 @@ app.use('/api/user' , UserRoutes)
 //Sign up api routes 
 
 app.use('/api/auth' , Authroutes )
+
+//post api routes
 app.use('/api/post' , PostRoutes)
 
 

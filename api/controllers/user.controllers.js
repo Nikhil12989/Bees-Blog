@@ -2,6 +2,9 @@ import  bcryptjs  from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import User from '../models/userModel.js';
 
+
+//user Controller
+
 export const test = (req, res) => {
   res.json({ message: 'API is working!' });
 };
